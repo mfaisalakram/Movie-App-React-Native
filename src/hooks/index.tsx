@@ -29,12 +29,11 @@ const Provides: React.FC = ({ children }) => {
   const [movie, loading, pages] = useFetchMore(page);
   useEffect(() => {
     if (favorite.length > 0) {
-      console.log("Hllllllllllllllllllllllllllllc");
-      
+
       AsyncStorage.setItem('favorite', `${favorite}`);
     }
   }, [favorite]);
-  const value = useMemo(() => ({movie, loading, pages, page, setPages}), []);
+  const value = useMemo(() => ({ movie, loading, pages, page, setPages }), []);
 
   return <ContextAPI.Provider value={{ movie, loading, page, setPages, pages, favorite, setFavorites }}>{children}</ContextAPI.Provider>;
 };

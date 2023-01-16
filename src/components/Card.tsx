@@ -9,6 +9,9 @@ import { Color } from 'types';
 
 const { width, height } = Dimensions.get('screen');
 
+
+const dummyArray = "315162, 411, 19995, 899112"
+
 interface Props {
   src: ImageSourcePropType;
   title?: string;
@@ -22,6 +25,9 @@ const Card: React.FC<Props> = React.memo(({ src, title, style, id }) => {
   const { favorite, setFavorites } = useMovie()
   // const favorite = async() => {return await AsyncStorage.getItem('favorite');  }
   // const favorite = favoriteFun()
+
+
+
   const checkFav = (id) => favorite?.filter((dt) => {
     return (dt === id)
   });
@@ -73,7 +79,7 @@ const Card: React.FC<Props> = React.memo(({ src, title, style, id }) => {
     <Animated.View style={[style, styles.container]}>
       <SharedElement style={styles.img} id={`item.${title}.card`}>
         <TouchableOpacity style={{ left: 3, top: 25, zIndex: 1 }} onPress={() => { addFav(id) }}>
-          {value === true ? <><MaterialIcons name="favorite" size={24} color={Color.purple2} /></> : <><MaterialIcons name="favorite-border" size={24} color={Color.purple2} /></>}
+          {dummyArray.includes(id) ? <><MaterialIcons name="favorite" size={24} color={Color.purple2} /></> : <><MaterialIcons name="favorite-border" size={24} color={Color.purple2} /></>}
         </TouchableOpacity>
         <Image resizeMode="cover" style={styles.img} source={src} />
 

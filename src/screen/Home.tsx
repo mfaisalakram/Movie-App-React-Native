@@ -31,6 +31,7 @@ import { getMovies } from 'api';
 
 const { width, height } = Dimensions.get('screen');
 
+
 const EMTY = (width - ITEM_W) / 2;
 
 type List = {
@@ -87,7 +88,13 @@ const RenderItem: FC<List> = memo(
 
 const Home: React.FC<HomeStack> = ({ navigation }: any) => {
   const scrollX = useValue(0);
-  const { setPages, movie, page, pages } = useMovie();
+  let { setPages, movie, page, pages } = useMovie();
+  // const dummyArray = [315162, 411, 19995]
+
+  // let filterArray = movie.filter((item) => {
+  //   return dummyArray.includes(item?.id);
+  // })
+
   const [nextPage, setNext] = useState(false);
   const [prevPage, setPrevPage] = useState(false);
   const ref = useRef<Animated.ScrollView & ScrollView>(null);
