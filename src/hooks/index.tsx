@@ -29,7 +29,8 @@ const Provides: React.FC = ({ children }) => {
   const [movie, loading, pages] = useFetchMore(page);
   useEffect(() => {
     if (favorite.length > 0) {
-
+        console.log("ashasgdjasgdjasd",favorite);
+        
       AsyncStorage.setItem('favorite', `${favorite}`);
     }
   }, [favorite]);

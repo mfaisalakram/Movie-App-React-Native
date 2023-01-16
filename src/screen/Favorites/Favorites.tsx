@@ -9,26 +9,86 @@ import { MaterialIcons } from '@expo/vector-icons';
 import RNPickerSelect from 'react-native-picker-select';
 import axios from 'axios';
 import { POSTER_BASE_URL } from 'config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useMovie } from 'hooks';
 
 
 const Favorites = () => {
 
     const navigation = useNavigation();
     const [movies, setMovies] = useState([]);
-    const [fav, setFav] = useState(true);
     const [favoriteArray, setFavoriteArray] = useState([315162, 411, 19995]);
+    const { setFavorites } = useMovie()
+    const [favorite , setFav] = useState([])
+    const [trigger , setTrigger] = useState(false)
+    // const favorite = async() => {return await AsyncStorage.getItem('favorite');  }
+    // const favorite = favoriteFun()
+    const displayData = async ()=>{  
+      try{  
+        let user = await AsyncStorage.getItem('favorite');  
+        if(user) {
+          let users = user.split(',').map(Number);
+          console.log({users});
+          
+          setFav(users)
+        }
+      }  
+      catch(error){  
+        console.log({error});
+        
+      } 
+    }
+  
+  
+    const checkFav = (id) => {return favorite.toString()?.includes((id.toString()));}
+    let arr = []
+    const notFav = (id) => favorite?.filter((dt) => {
+      console.log("ghghghg",id,dt);
+      if( id != dt){
+        arr.push(dt)
+      }
+      return (id != dt)
+    });
+    const addFav = (id: Number) => {
+      console.log({ id });
+      let check1 = checkFav(id)
+      console.log({ check1, favorite });
+      let check = true
+      if (check1) {
+        check = false
+      }
+      if (id && check) {
+        setFavorites((favorite: any) => [...favorite, Number(id)]);
+      }
+      else if (id) {
+        const getId = notFav(id)
+        console.log({arr});
+        setFavorites(getId)
+      }
+      setTrigger(!trigger)
+  
+    }
+  
+    console.log({favorite});
+    
 
     const getMovieData = async () => {
         const response = await axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=54ed8b21fd2d7a380faaa388189b382f&language=en-US`)
         if (response.data) {
             let filterarr = response?.data?.results.filter((item: any) => {
-                return favoriteArray.includes(item?.id)
+                return favorite.toString().includes(item?.id)
             })
             setMovies(filterarr)
         }
     }
 
+      
     useEffect(() => {
+        console.log("awawawawaws");
+        displayData()
+      }, [trigger])
+    useEffect(() => {
+        displayData()
         getMovieData();
     }, [])
 

@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Dimensions, Image, ImageSourcePropType, StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Dimensions, Image, ImageSourcePropType, StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SharedElement } from 'react-navigation-shared-element';
 import { useMovie } from 'hooks';
@@ -22,64 +22,73 @@ interface Props {
 export const ITEM_W = width * 0.5;
 
 const Card: React.FC<Props> = React.memo(({ src, title, style, id }) => {
-  const { favorite, setFavorites } = useMovie()
+  const { setFavorites } = useMovie()
+  const [favorite , setFav] = useState([])
+  const [trigger , setTrigger] = useState(false)
   // const favorite = async() => {return await AsyncStorage.getItem('favorite');  }
   // const favorite = favoriteFun()
+  const ref = useRef()
+  const displayData = async ()=>{  
+    try{  
+      let user = await AsyncStorage.getItem('favorite');  
+      if(user) {
+        let users = user.split(',').map(Number);
+        console.log({users});
+        
+        setFav(users)
+      }
+    }  
+    catch(error){  
+      console.log({error});
+      
+    } 
+  }
 
 
-
-  const checkFav = (id) => favorite?.filter((dt) => {
-    return (dt === id)
-  });
+  const checkFav = (id) => {return favorite.toString()?.includes((id.toString()));}
+  let arr = []
   const notFav = (id) => favorite?.filter((dt) => {
-    return (dt !== id)
+    console.log("ghghghg",id,dt);
+    if( id != dt){
+      arr.push(dt)
+    }
+    return (id != dt)
   });
-  console.log({ favorite });
-
   const addFav = (id: Number) => {
     console.log({ id });
     let check1 = checkFav(id)
     console.log({ check1, favorite });
     let check = true
-    if (check1.length > 0) {
-
+    if (check1) {
       check = false
     }
     if (id && check) {
-      setFavorites(favorite => [...favorite, id]);
+      setFavorites(favorite => [...favorite, Number(id)]);
     }
     else if (id) {
       const getId = notFav(id)
+      console.log({arr});
       setFavorites(getId)
     }
-    // setFavorites([...favorite, id])
-  }
-  const data = () => {
-    return (
-      favorite.filter(name => name.includes('J')).map((filteredName) => (
-        console.log(filteredName)
-      ))
-    )
-  }
-  console.log("helo");
+    setTrigger(!trigger)
 
-  let value: any
+  }
+
   useEffect(() => {
-    value = data()
-    console.log({ value }
-    );
-
+    displayData()
   }, [])
-  console.log({ value }
-  )
+  console.log({favorite});
+  
+
   useEffect(() => {
-    value = data()
-  }, [id])
+    console.log("awawawawaws");
+    displayData()
+  }, [trigger])
   return (
     <Animated.View style={[style, styles.container]}>
       <SharedElement style={styles.img} id={`item.${title}.card`}>
-        <TouchableOpacity style={{ left: 3, top: 25, zIndex: 1 }} onPress={() => { addFav(id) }}>
-          {dummyArray.includes(id) ? <><MaterialIcons name="favorite" size={24} color={Color.purple2} /></> : <><MaterialIcons name="favorite-border" size={24} color={Color.purple2} /></>}
+        <TouchableOpacity style={{ left: 3, top: 25, zIndex: 1 }}  onPress={() => { addFav(id) }}>
+          {favorite.toString().includes(id) ? <View><MaterialIcons name="favorite" size={24} color={Color.purple2} /></View> : <><MaterialIcons name="favorite-border" size={24} color={Color.purple2} /></>}
         </TouchableOpacity>
         <Image resizeMode="cover" style={styles.img} source={src} />
 

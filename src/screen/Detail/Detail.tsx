@@ -20,6 +20,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Color } from 'typed';
 import { useNavigation } from '@react-navigation/native';
 import { useMovie } from 'hooks';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type DetailStack = StackScreenProps<StackHome<any, any, ItemsProps>, 'Detail'>;
 
@@ -28,7 +29,7 @@ const Detail: React.FC<DetailStack> = ({ route }) => {
   const [movieDetail, setMovieDetail] = useState<any>({});
   const [loader, setLoader] = useState(false);
   const [movies, setMovies] = useState([]);
-  const { favorite, setFavorites } = useMovie();
+  const { setFavorites } = useMovie();
 
   const navigation = useNavigation();
 
@@ -93,32 +94,66 @@ const Detail: React.FC<DetailStack> = ({ route }) => {
     getAllMovies();
   }, [params?.key, params?.id]);
 
-  const checkFav = (id) => favorite?.filter((dt) => {
-    return (dt === id)
-  });
-  const notFav = (id) => favorite?.filter((dt) => {
-    return (dt !== id)
-  });
-  console.log({ favorite });
+  const [favorite , setFav] = useState([])
+  const [trigger , setTrigger] = useState(false)
+  // const favorite = async() => {return await AsyncStorage.getItem('favorite');  }
+  // const favorite = favoriteFun()
+  const displayData = async ()=>{  
+    try{  
+      let user = await AsyncStorage.getItem('favorite');  
+      if(user) {
+        let users = user.split(',').map(Number);
+        console.log({users});
+        
+        setFav(users)
+      }
+    }  
+    catch(error){  
+      console.log({error});
+      
+    } 
+  }
 
+
+  const checkFav = (id) => {return favorite.toString()?.includes((id.toString()));}
+  let arr = []
+  const notFav = (id) => favorite?.filter((dt) => {
+    console.log("ghghghg",id,dt);
+    if( id != dt){
+      arr.push(dt)
+    }
+    return (id != dt)
+  });
   const addFav = (id: Number) => {
     console.log({ id });
     let check1 = checkFav(id)
     console.log({ check1, favorite });
     let check = true
-    if (check1.length > 0) {
-
+    if (check1) {
       check = false
     }
     if (id && check) {
-      setFavorites(favorite => [...favorite, id]);
+      setFavorites(favorite => [...favorite, Number(id)]);
     }
     else if (id) {
       const getId = notFav(id)
+      console.log({arr});
       setFavorites(getId)
     }
-    // setFavorites([...favorite, id])
+    setTrigger(!trigger)
+
   }
+
+  useEffect(() => {
+    displayData()
+  }, [])
+  console.log({favorite});
+  
+
+  useEffect(() => {
+    console.log("awawawawaws");
+    displayData()
+  }, [trigger])
 
   return (
     <View style={[styles.root]}>
@@ -185,18 +220,7 @@ const Detail: React.FC<DetailStack> = ({ route }) => {
                 <Text style={styles.summaryText}>{movieDetail?.overview}</Text>
               </View>}
               <TouchableOpacity style={{ top: 20, right: 30 }} onPress={() => { addFav(movieDetail?.id) }}>
-                {favorite?.length > 0 ? <>
-                  {favorite?.map((id) => {
-                    return (
-                      <>
-                        {console.log("jkljhefhwejh")
-                        }
-                        {id === movieDetail?.id ? <MaterialIcons name="favorite" size={24} color="white" /> : <MaterialIcons name="favorite-border" size={24} color="white" />}
-                      </>
-                    )
-                  })}
-                </> : <MaterialIcons name="favorite-border" size={24} color="white" />}
-
+              {favorite.toString().includes(movieDetail?.id) ? <View><MaterialIcons name="favorite" size={24} color={Color.purple2} /></View> : <><MaterialIcons name="favorite-border" size={24} color={Color.purple2} /></>}
               </TouchableOpacity>
             </View>
 
