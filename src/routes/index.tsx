@@ -68,18 +68,18 @@ export const HomeStack = () => {
       <Drawer.Screen
         name="Detail"
         component={Detail}
-        options={{ headerShown: false }}
+        options={{ headerShown: false, unmountOnBlur: true }}
       />
 
-      <Drawer.Screen name="Setting" component={Setting} />
-      <Drawer.Screen name="Search" component={Search} />
+      <Drawer.Screen name="Setting" component={Setting} options={{ unmountOnBlur: true }} />
+      <Drawer.Screen name="Search" component={Search} options={{ unmountOnBlur: true }} />
 
-      <Drawer.Screen name="About" component={About} />
-      <Drawer.Screen name="Privacy" component={Privacy} />
-      <Drawer.Screen name="PersonDetail" component={PersonDetail} />
-      <Drawer.Screen name="TvShows" component={TvShows} />
-      <Drawer.Screen name="Theaters" component={Theaters} />
-      <Drawer.Screen name="Favorites" component={Favorites} />
+      <Drawer.Screen name="About" component={About} options={{ unmountOnBlur: true }} />
+      <Drawer.Screen name="Privacy" component={Privacy} options={{ unmountOnBlur: true }} />
+      <Drawer.Screen name="PersonDetail" component={PersonDetail} options={{ unmountOnBlur: true }} />
+      <Drawer.Screen name="TvShows" component={TvShows} options={{ unmountOnBlur: true }} />
+      <Drawer.Screen name="Theaters" component={Theaters} options={{ unmountOnBlur: true }} />
+      <Drawer.Screen name="Favorites" component={Favorites} options={{ unmountOnBlur: true }} />
     </Drawer.Navigator>
   );
 };
