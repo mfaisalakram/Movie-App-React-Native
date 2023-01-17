@@ -7,7 +7,7 @@ interface Context {
   movie: ItemsProps[];
   pages: { page: string | number; total: string | number };
   setPages: React.Dispatch<React.SetStateAction<number>>;
-  setFavorites: React.Dispatch<React.SetStateAction<Array<Number>>>;
+  c: React.Dispatch<React.SetStateAction<Array<Number>>>;
   favorite: Array<Number>;
   page: number;
 
@@ -28,13 +28,14 @@ const Provides: React.FC = ({ children }) => {
   const [favorite, setFavorites] = useState<Array<Number>>([]);
   const [movie, loading, pages] = useFetchMore(page);
   useEffect(() => {
-    if (favorite.length > 0) {
-        console.log("ashasgdjasgdjasd",favorite);
-        
-      AsyncStorage.setItem('favorite', `${favorite}`);
-    }
+
+    console.log("favoriteconsole", favorite);
+
+    AsyncStorage.setItem('favorite', `${favorite}`);
+
   }, [favorite]);
   const value = useMemo(() => ({ movie, loading, pages, page, setPages }), []);
+  console.log("favoriteconsole222", favorite);
 
   return <ContextAPI.Provider value={{ movie, loading, page, setPages, pages, favorite, setFavorites }}>{children}</ContextAPI.Provider>;
 };

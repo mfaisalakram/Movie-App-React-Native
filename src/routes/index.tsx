@@ -64,7 +64,7 @@ export const HomeStack = () => {
       }}
       drawerContent={() => <DrawerContent />}
     >
-      <Drawer.Screen name="Home" component={Home} />
+      <Drawer.Screen name="Home" component={Home} options={{ unmountOnBlur: true }} />
       <Drawer.Screen
         name="Detail"
         component={Detail}

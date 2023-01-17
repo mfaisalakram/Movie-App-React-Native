@@ -89,12 +89,6 @@ const RenderItem: FC<List> = memo(
 const Home: React.FC<HomeStack> = ({ navigation }: any) => {
   const scrollX = useValue(0);
   let { setPages, movie, page, pages } = useMovie();
-  // const dummyArray = [315162, 411, 19995]
-
-  // let filterArray = movie.filter((item) => {
-  //   return dummyArray.includes(item?.id);
-  // })
-
   const [nextPage, setNext] = useState(false);
   const [prevPage, setPrevPage] = useState(false);
   const ref = useRef<Animated.ScrollView & ScrollView>(null);
@@ -133,7 +127,6 @@ const Home: React.FC<HomeStack> = ({ navigation }: any) => {
 
   useEffect(() => {
     if (ref.current && nextPage) {
-      //@ts-ignore
       getMovies(page + 1)
     }
     else if (ref.current && prevPage) {
