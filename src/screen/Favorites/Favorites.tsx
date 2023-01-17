@@ -22,14 +22,15 @@ const Favorites = () => {
     const [favorite, setFav] = useState<any>([])
     const [trigger, setTrigger] = useState<any>(false)
     const [loader, setLoader] = useState<any>()
-    // const favorite = async() => {return await AsyncStorage.getItem('favorite');  }
-    // const favorite = favoriteFun()
+
     const displayData = async () => {
         try {
             let user = await AsyncStorage.getItem('favorite');
             if (user) {
                 let users = user.split(',').map(Number);
-                setFav(users)
+                setFav([...favorite, users])
+            } else {
+                setFav([]);
             }
         }
         catch (error) {
@@ -38,36 +39,7 @@ const Favorites = () => {
         }
     }
 
-
-    const checkFav = (id) => { return favorite.toString()?.includes((id.toString())); }
-    let arr = []
-    const notFav = (id) => favorite?.filter((dt) => {
-        if (id != dt) {
-            arr.push(dt)
-        }
-        return (id != dt)
-    });
-    const addFav = (id: Number) => {
-        console.log({ id });
-        let check1 = checkFav(id)
-        console.log({ check1, favorite });
-        let check = true
-        if (check1) {
-            check = false
-        }
-        if (id && check) {
-            setFavorites((favorite: any) => [...favorite, Number(id)]);
-        }
-        else if (id) {
-            const getId = notFav(id)
-            setFavorites(getId)
-        }
-        setTrigger(!trigger)
-
-    }
-
     const getMovieData = async () => {
-        console.log('yo: ', favorite)
         setLoader(true);
         const response = await axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=54ed8b21fd2d7a380faaa388189b382f&language=en-US`)
         if (response.data) {
@@ -81,18 +53,6 @@ const Favorites = () => {
         }
     }
 
-
-    useEffect(() => {
-        displayData()
-    }, [])
-
-
-    useEffect(() => {
-        // console.log('useEffet runn', favorite)
-        // displayData();
-        getMovieData();
-    }, [])
-
     const removeFavorite = (id: any) => {
         const index = favorite.indexOf(id);
         if (index > -1) {
@@ -102,6 +62,43 @@ const Favorites = () => {
             return;
         }
     }
+
+
+
+    useEffect(() => {
+        displayData();
+    }, []);
+
+    useEffect(() => {
+        getMovieData();
+    }, []);
+
+
+
+    // const checkFav = (id) => { return favorite.toString()?.includes((id.toString())); }
+    // let arr = []
+    // const notFav = (id) => favorite?.filter((dt) => {
+    //     if (id != dt) {
+    //         arr.push(dt)
+    //     }
+    //     return (id != dt)
+    // });
+    // const addFav = (id: Number) => {
+    //     let check1 = checkFav(id)
+    //     let check = true
+    //     if (check1) {
+    //         check = false
+    //     }
+    //     if (id && check) {
+    //         setFavorites((favorite: any) => [...favorite, Number(id)]);
+    //     }
+    //     else if (id) {
+    //         const getId = notFav(id)
+    //         setFavorites(getId)
+    //     }
+    //     setTrigger(!trigger)
+
+    // }
 
     return (
         <>

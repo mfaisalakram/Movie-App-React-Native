@@ -23,9 +23,9 @@ export const ITEM_W = width * 0.5;
 
 const Card: React.FC<Props> = React.memo(({ src, title, style, id }) => {
   const { setFavorites } = useMovie()
-  const [favorite, setFav] = useState([])
-  const [trigger, setTrigger] = useState(false)
-  const [heart, setHeart] = useState()
+  const [favorite, setFav] = useState<any>([])
+  const [trigger, setTrigger] = useState<any>(false)
+  const [heart, setHeart] = useState<any>()
   // const favorite = async() => {return await AsyncStorage.getItem('favorite');  }
   // const favorite = favoriteFun()
   const ref = useRef()
@@ -34,14 +34,11 @@ const Card: React.FC<Props> = React.memo(({ src, title, style, id }) => {
       let user = await AsyncStorage.getItem('favorite');
       if (user) {
         let users = user.split(',').map(Number);
-        console.log({ users });
-
-        setFav(users)
+        setFav([...favorite, users])
       }
     }
     catch (error) {
       console.log({ error });
-
     }
   }
 
@@ -49,7 +46,6 @@ const Card: React.FC<Props> = React.memo(({ src, title, style, id }) => {
   const checkFav = (id) => { return favorite.toString()?.includes((id.toString())); }
   let arr = []
   const notFav = (id) => favorite?.filter((dt) => {
-    console.log("ghghghg", id, dt);
     if (id != dt) {
       arr.push(dt)
     }
@@ -78,13 +74,11 @@ const Card: React.FC<Props> = React.memo(({ src, title, style, id }) => {
   useEffect(() => {
     displayData()
   }, [])
-  console.log({ favorite });
-
 
   useEffect(() => {
-    console.log("awawawawaws");
     displayData()
   }, [trigger])
+
   return (
     <Animated.View style={[style, styles.container]}>
       <SharedElement style={styles.img} id={`item.${title}.card`}>
