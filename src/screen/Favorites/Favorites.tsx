@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Image, ActivityIndicator } from 'react-native';
 import { Color } from 'types';
 import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -16,138 +16,148 @@ import { useMovie } from 'hooks';
 const Favorites = () => {
 
     const navigation = useNavigation();
-    const [movies, setMovies] = useState([]);
-    const [favoriteArray, setFavoriteArray] = useState([315162, 411, 19995]);
+    const [movies, setMovies] = useState<any>([]);
+    const [favoriteArray, setFavoriteArray] = useState<any>([315162, 411, 19995]);
     const { setFavorites } = useMovie()
-    const [favorite , setFav] = useState([])
-    const [trigger , setTrigger] = useState(false)
+    const [favorite, setFav] = useState<any>([])
+    const [trigger, setTrigger] = useState<any>(false)
+    const [loader, setLoader] = useState<any>()
     // const favorite = async() => {return await AsyncStorage.getItem('favorite');  }
     // const favorite = favoriteFun()
-    const displayData = async ()=>{  
-      try{  
-        let user = await AsyncStorage.getItem('favorite');  
-        if(user) {
-          let users = user.split(',').map(Number);
-          console.log({users});
-          
-          setFav(users)
+    const displayData = async () => {
+        try {
+            let user = await AsyncStorage.getItem('favorite');
+            if (user) {
+                let users = user.split(',').map(Number);
+                setFav(users)
+            }
         }
-      }  
-      catch(error){  
-        console.log({error});
-        
-      } 
+        catch (error) {
+            console.log({ error });
+
+        }
     }
-  
-  
-    const checkFav = (id) => {return favorite.toString()?.includes((id.toString()));}
+
+
+    const checkFav = (id) => { return favorite.toString()?.includes((id.toString())); }
     let arr = []
     const notFav = (id) => favorite?.filter((dt) => {
-      console.log("ghghghg",id,dt);
-      if( id != dt){
-        arr.push(dt)
-      }
-      return (id != dt)
+        if (id != dt) {
+            arr.push(dt)
+        }
+        return (id != dt)
     });
     const addFav = (id: Number) => {
-      console.log({ id });
-      let check1 = checkFav(id)
-      console.log({ check1, favorite });
-      let check = true
-      if (check1) {
-        check = false
-      }
-      if (id && check) {
-        setFavorites((favorite: any) => [...favorite, Number(id)]);
-      }
-      else if (id) {
-        const getId = notFav(id)
-        console.log({arr});
-        setFavorites(getId)
-      }
-      setTrigger(!trigger)
-  
+        console.log({ id });
+        let check1 = checkFav(id)
+        console.log({ check1, favorite });
+        let check = true
+        if (check1) {
+            check = false
+        }
+        if (id && check) {
+            setFavorites((favorite: any) => [...favorite, Number(id)]);
+        }
+        else if (id) {
+            const getId = notFav(id)
+            setFavorites(getId)
+        }
+        setTrigger(!trigger)
+
     }
-  
-    console.log({favorite});
-    
 
     const getMovieData = async () => {
+        console.log('yo: ', favorite)
+        setLoader(true);
         const response = await axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=54ed8b21fd2d7a380faaa388189b382f&language=en-US`)
         if (response.data) {
             let filterarr = response?.data?.results.filter((item: any) => {
                 return favorite.toString().includes(item?.id)
             })
             setMovies(filterarr)
+            setLoader(false);
+        } else {
+            setLoader(false)
         }
     }
 
-      
-    useEffect(() => {
-        console.log("awawawawaws");
-        displayData()
-      }, [trigger])
+
     useEffect(() => {
         displayData()
-        getMovieData();
     }, [])
 
 
-    const removeFavorite = (id: any) => {
-        const index = favoriteArray.indexOf(id);
+    useEffect(() => {
+        // console.log('useEffet runn', favorite)
+        // displayData();
+        getMovieData();
+    }, [])
 
+    const removeFavorite = (id: any) => {
+        const index = favorite.indexOf(id);
         if (index > -1) {
-            setFavoriteArray(favoriteArray.splice(index, 1))
+            setFavoriteArray(favorite.splice(index, 1))
             getMovieData();
         } else {
             return;
         }
-
     }
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <AntDesign name="left" size={30} color={Color.purple1} style={{ fontWeight: 'bold', backgroundColor: Color.purple2, borderRadius: 5, padding: 3 }} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('Search')}>
-                    <Feather name="search" size={30} color={Color.purple1} style={{ fontWeight: 'bold', backgroundColor: Color.purple2, borderRadius: 5, padding: 3 }} />
-                </TouchableOpacity>
-            </View>
-
-            {movies.length <= 0 ? (
-                <View style={styles.summaryView}>
-                    <Text style={{ color: Color.white, width: 200, textAlign: 'center' }}>You don't save anything, Let's explore now!</Text>
-                </View>
-            ) : (
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-                    {movies?.map(({ poster_path, id, title, vote_average }: any) => {
-                        return <TouchableOpacity key={id} onPress={() => navigation.navigate('Detail', { id })} style={styles?.mainCard}>
-                            <Image style={styles.image} source={{ uri: `${POSTER_BASE_URL}${poster_path}` }} />
-
-                            <View style={{ position: 'absolute', top: 10, right: 10, }}>
+        <>
+            {loader ?
+                (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Color.purple1 }}><ActivityIndicator
+                    size={'large'}
+                    color={Color.purple2}
+                    style={{ marginTop: '40%' }}
+                />
 
 
-                                <AntDesign name="heart" size={24} color={Color.purple2} onPress={() => removeFavorite(id)} />
+                </View>) : (
+                    <ScrollView contentContainerStyle={styles.container}>
+                        <View style={styles.header}>
+                            <TouchableOpacity onPress={() => navigation.goBack()}>
+                                <AntDesign name="left" size={30} color={Color.purple1} style={{ fontWeight: 'bold', backgroundColor: Color.purple2, borderRadius: 5, padding: 3 }} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigation.navigate('Search')}>
+                                <Feather name="search" size={30} color={Color.purple1} style={{ fontWeight: 'bold', backgroundColor: Color.purple2, borderRadius: 5, padding: 3 }} />
+                            </TouchableOpacity>
+                        </View>
 
+                        {movies.length <= 0 ? (
+                            <View style={styles.summaryView}>
+                                <Text style={{ color: Color.white, width: 200, textAlign: 'center' }}>You don't save anything, Let's explore now!</Text>
                             </View>
+                        ) : (
+                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+                                {movies?.map(({ poster_path, id, title, vote_average }: any) => {
+                                    return <TouchableOpacity key={id} onPress={() => navigation.navigate('Detail', { id })} style={styles?.mainCard}>
+                                        <Image style={styles.image} source={{ uri: `${POSTER_BASE_URL}${poster_path}` }} />
 
-                            <View style={{ position: 'absolute', bottom: 10, left: 10 }}>
+                                        <View style={{ position: 'absolute', top: 10, right: 10, }}>
 
-                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: 40, textAlign: 'center', backgroundColor: Color.yellow1, alignItems: 'center' }}>
-                                    <Text style={{ fontWeight: 'bold' }}>{vote_average}</Text>
-                                    <AntDesign name="star" size={12} color="black" />
-                                </View>
 
-                                <Text style={{ color: '#fff', fontWeight: 'bold', width: 100, }} numberOfLines={2}> {title}</Text>
+                                            <AntDesign name="heart" size={24} color={Color.purple2} onPress={() => removeFavorite(id)} />
+
+                                        </View>
+
+                                        <View style={{ position: 'absolute', bottom: 10, left: 10 }}>
+
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: 40, textAlign: 'center', backgroundColor: Color.yellow1, alignItems: 'center' }}>
+                                                <Text style={{ fontWeight: 'bold' }}>{vote_average}</Text>
+                                                <AntDesign name="star" size={12} color="black" />
+                                            </View>
+
+                                            <Text style={{ color: '#fff', fontWeight: 'bold', width: 100, }} numberOfLines={2}> {title}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                })}
                             </View>
-                        </TouchableOpacity>
-                    })}
-                </View>
-            )}
-        </ScrollView >
+                        )}
+                    </ScrollView >
+                )}
+        </>
+
     )
 }
 

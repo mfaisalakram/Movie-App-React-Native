@@ -23,33 +23,34 @@ export const ITEM_W = width * 0.5;
 
 const Card: React.FC<Props> = React.memo(({ src, title, style, id }) => {
   const { setFavorites } = useMovie()
-  const [favorite , setFav] = useState([])
-  const [trigger , setTrigger] = useState(false)
+  const [favorite, setFav] = useState([])
+  const [trigger, setTrigger] = useState(false)
+  const [heart, setHeart] = useState()
   // const favorite = async() => {return await AsyncStorage.getItem('favorite');  }
   // const favorite = favoriteFun()
   const ref = useRef()
-  const displayData = async ()=>{  
-    try{  
-      let user = await AsyncStorage.getItem('favorite');  
-      if(user) {
+  const displayData = async () => {
+    try {
+      let user = await AsyncStorage.getItem('favorite');
+      if (user) {
         let users = user.split(',').map(Number);
-        console.log({users});
-        
+        console.log({ users });
+
         setFav(users)
       }
-    }  
-    catch(error){  
-      console.log({error});
-      
-    } 
+    }
+    catch (error) {
+      console.log({ error });
+
+    }
   }
 
 
-  const checkFav = (id) => {return favorite.toString()?.includes((id.toString()));}
+  const checkFav = (id) => { return favorite.toString()?.includes((id.toString())); }
   let arr = []
   const notFav = (id) => favorite?.filter((dt) => {
-    console.log("ghghghg",id,dt);
-    if( id != dt){
+    console.log("ghghghg", id, dt);
+    if (id != dt) {
       arr.push(dt)
     }
     return (id != dt)
@@ -67,7 +68,7 @@ const Card: React.FC<Props> = React.memo(({ src, title, style, id }) => {
     }
     else if (id) {
       const getId = notFav(id)
-      console.log({arr});
+      console.log({ arr });
       setFavorites(getId)
     }
     setTrigger(!trigger)
@@ -77,8 +78,8 @@ const Card: React.FC<Props> = React.memo(({ src, title, style, id }) => {
   useEffect(() => {
     displayData()
   }, [])
-  console.log({favorite});
-  
+  console.log({ favorite });
+
 
   useEffect(() => {
     console.log("awawawawaws");
@@ -87,8 +88,8 @@ const Card: React.FC<Props> = React.memo(({ src, title, style, id }) => {
   return (
     <Animated.View style={[style, styles.container]}>
       <SharedElement style={styles.img} id={`item.${title}.card`}>
-        <TouchableOpacity style={{ left: 3, top: 25, zIndex: 1 }}  onPress={() => { addFav(id) }}>
-          {favorite.toString().includes(id) ? <View><MaterialIcons name="favorite" size={24} color={Color.purple2} /></View> : <><MaterialIcons name="favorite-border" size={24} color={Color.purple2} /></>}
+        <TouchableOpacity style={{ left: 3, top: 25, zIndex: 1 }} onPress={() => { setHeart(!heart); addFav(id) }}>
+          {favorite.toString().includes(id) || heart ? <View><MaterialIcons name="favorite" size={24} color={Color.purple2} /></View> : <><MaterialIcons name="favorite-border" size={24} color={Color.purple2} /></>}
         </TouchableOpacity>
         <Image resizeMode="cover" style={styles.img} source={src} />
 
